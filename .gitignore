@@ -1,0 +1,13 @@
+# Real database credentials - කවදාවත් commit කරන්න එපා
+config.yaml
+
+# Runtime-generated files
+backups/*.json
+reports/*.csv
+reports/*.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
