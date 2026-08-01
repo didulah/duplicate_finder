@@ -6,14 +6,32 @@
 ```
 ## [YYYY-MM-DD] - කෙටි title එකක්
 **කරපු දේවල්:**
--
 **තීරණ ගත් දේවල්:**
--
 **Blockers / Issues:**
--
 **ඊළඟ steps:**
--
-```
+
+## [2026-08-01] - MySQL Testing + Repo Audit
+
+**කරපු දේවල්:**
+- MySQL 8.0 container එකේ install කරලා, dupfinder_test DB එකක් + customers table (8 records, email duplicates 3ක්) හදලා full end-to-end test කළා
+- Dry-run test ✅ (3 delete candidates identify කළා, කිසිවක් delete වුණේ නෑ)
+- --confirm test ✅ (records 3 correct ලෙස delete වුණා, keep_first strategy verify වුණා)
+- Re-run test ✅ (duplicates නැති බව confirm වුණා)
+- Backup JSON content verify කළා (restorable format)
+- Repo audit කළා - LICENSE සහ config.example.yaml push වෙලා නොතිබූ බව හඳුනාගත්තා
+
+**තීරණ ගත් දේවල්:**
+- LICENSE type: Custom "Regular License" (CodeCanyon-style) - source code access ඇතුව, resell/redistribute බෑ
+- Anonymity සඳහා LICENSE සහ main.py වල real name නොදා GitHub username (didulah) විතරක් use කළා
+
+**Blockers / Issues:**
+- කිසිවක් නෑ
+
+**ඊළඟ steps:**
+- [ ] LICENSE, config.example.yaml, main.py (fixed) push කරන්න
+- [ ] Gumroad/CodeCanyon listing description ලියන්න
+- [ ] v2 features plan කරන්න (fuzzy matching, multi-table support, simple GUI)
+
 ## 2026-07-31 - MySQL Testing Complete
 
 **කරපු දේවල්:**
@@ -30,10 +48,10 @@
 **ඊළඟ steps:**
 - [x] GitHub repo එකට push කරන්න
 - [x] MySQL එකෙනුත් end-to-end test කරන්න
-- [x] `LICENSE` file එක ලියන්න
+- [ ] `LICENSE` file එක ලියන්න
 - [ ] Gumroad/CodeCanyon listing description එක ලියන්න
 - [ ] Fuzzy matching (v2 feature) plan කරන්න
----
+
 ## 2026-07-31 - MVP Build + PostgreSQL Test
 
 **කරපු දේවල්:**
