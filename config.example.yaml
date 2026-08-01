@@ -20,3 +20,4 @@ output:
 safety:
   auto_backup_before_delete: true
   backup_directory: ./backups
+  
