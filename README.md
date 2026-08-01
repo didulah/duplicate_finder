@@ -1,15 +1,15 @@
 # Duplicate Finder & Cleaner
 
-Database (MySQL / PostgreSQL) table එකක duplicate records automatic ලෙස සොයාගෙන, **safely** review කරලා, clean කරන CLI tool එකක්.
+A CLI tool that automatically finds duplicate records in a MySQL / PostgreSQL table, lets you **safely** review them, and cleans them up.
 
 ## Features
 
-- MySQL සහ PostgreSQL දෙකටම support
-- එකක් හෝ ගණනාවක් columns (composite match) අනුව duplicate detection
-- **Dry-run by default** — `--confirm` flag නොදුන්නොත් කිසිම record එකක් delete වෙන්නෙ නෑ
-- Delete කරන්න කලින් automatic JSON backup
+- Supports both MySQL and PostgreSQL
+- Duplicate detection based on one or multiple columns (composite match)
+- **Dry-run by default** — without the `--confirm` flag, no record is ever deleted
+- Automatic JSON backup before deleting
 - CSV / JSON report export
-- Terminal එකේ readable summary table එක
+- Readable summary table printed to the terminal
 
 ## Installation
 
@@ -19,21 +19,21 @@ pip install -r requirements.txt
 
 ## Setup
 
-1. `config.example.yaml` file එක `config.yaml` විදිහට copy කරන්න:
+1. Copy `config.example.yaml` to `config.yaml`:
    ```bash
    cp config.example.yaml config.yaml
    ```
-2. `config.yaml` එකේ ඔයාගේ database credentials, table name, සහ match columns දාන්න.
+2. Fill in your database credentials, table name, and match columns in `config.yaml`.
 
 ## Usage
 
-**Step 1 — Dry run (preview විතරයි, කිසිවක් delete වෙන්නෙ නෑ):**
+**Step 1 — Dry run (preview only, nothing is deleted):**
 ```bash
 python main.py --config config.yaml
 ```
-මේකෙන් duplicate records report එකක් (CSV/JSON) generate කරලා, terminal එකේ summary එක පෙන්නනවා. Backup එකක් ගන්නවා, delete කරන්නෙ නෑ.
+This generates a duplicate records report (CSV/JSON) and shows a summary in the terminal. A backup is taken, but nothing is deleted.
 
-**Step 2 — Report එක review කරලා, ඔයාට හරි කියලා හිතුනොත්, actual delete කරන්න:**
+**Step 2 — Review the report, and if it looks correct, run the actual delete:**
 ```bash
 python main.py --config config.yaml --confirm
 ```
@@ -49,16 +49,16 @@ duplicate_finder/
 ├── safe_action.py          # Backup + safe delete logic
 ├── config.example.yaml     # Config template
 ├── requirements.txt
-├── reports/                # Generated reports save වෙන තැන
-└── backups/                # Delete කරන්න කලින් backups save වෙන තැන
+├── reports/                # Generated reports are saved here
+└── backups/                # Backups are saved here before deletion
 ```
 
 ## Safety Notes
 
-- **Always dry-run first.** `--confirm` නැතුව run කරලා report එක check කරන්න.
-- Backup file එක `backups/` folder එකේ save වෙනවා — delete එකකින් පස්සේ මොකක් හරි වැරදුනොත් මේකෙන් data restore කරන්න පුළුවන් (manual INSERT කරලා).
-- `config.yaml` (real credentials තියෙන file එක) කවදාවත් GitHub වලට push කරන්න එපා — `.gitignore` එකේ දැනටමත් exclude කරලා තියෙනවා.
+- **Always dry-run first.** Run without `--confirm` and check the report.
+- Backup files are saved in the `backups/` folder — if anything goes wrong after a delete, you can restore data from these files (via manual INSERT).
+- Never push `config.yaml` (the file with real credentials) to GitHub — it's already excluded in `.gitignore`.
 
 ## License
 
-Commercial license — see LICENSE file for terms (marketplace එකේ publish කරද්දී මේ file එක add කරන්න).
+Commercial license — see the LICENSE file for terms.
