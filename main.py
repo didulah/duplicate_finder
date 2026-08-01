@@ -7,7 +7,7 @@ Usage:
     python main.py --config config.yaml                 # Scan + report විතරක් (safe, delete වෙන්නෙ නෑ)
     python main.py --config config.yaml --confirm        # Scan + report + actual DELETE (backup සමඟ)
 
-Author: Didula Himasara
+Author: didulah (github.com/didulah)
 """
 
 import argparse
