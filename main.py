@@ -4,8 +4,8 @@ main.py
 Duplicate Finder & Cleaner - CLI Entry Point
 
 Usage:
-    python main.py --config config.yaml                 # Scan + report විතරක් (safe, delete වෙන්නෙ නෑ)
-    python main.py --config config.yaml --confirm        # Scan + report + actual DELETE (backup සමඟ)
+    python main.py --config config.yaml                  # Scan + report only (safe, nothing is deleted)
+    python main.py --config config.yaml --confirm         # Scan + report + actual DELETE (with backup)
 
 Author: didulah (github.com/didulah)
 """
@@ -21,22 +21,22 @@ from safe_action import SafeActionHandler
 
 
 def load_config(config_path: str) -> dict:
-    """config.yaml file එක load කරලා dict එකක් ලෙස return කරනවා."""
+    """Loads the config.yaml file and returns it as a dict."""
     try:
         with open(config_path, "r", encoding="utf-8") as f:
             return yaml.safe_load(f)
     except FileNotFoundError:
-        print(f"[ERROR] Config file එක හම්බුනේ නෑ: {config_path}")
-        print("        config.example.yaml, config.yaml විදිහට copy කරලා, ඔයාගේ DB details දාන්න.")
+        print(f"[ERROR] Config file not found: {config_path}")
+        print("        Copy config.example.yaml to config.yaml and fill in your DB details.")
         sys.exit(1)
     except yaml.YAMLError as e:
-        print(f"[ERROR] config.yaml file එකේ format එක වැරදියි: {e}")
+        print(f"[ERROR] config.yaml has an invalid format: {e}")
         sys.exit(1)
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Duplicate Finder & Cleaner - Database duplicate records සොයාගෙන, safely clean කරන tool එක."
+        description="Duplicate Finder & Cleaner - finds duplicate database records and safely cleans them up."
     )
     parser.add_argument(
         "--config", default="config.yaml",
@@ -44,8 +44,8 @@ def main():
     )
     parser.add_argument(
         "--confirm", action="store_true",
-        help="මේ flag එක දුන්නොත් විතරයි actual DELETE operation එක run වෙන්නෙ. "
-             "නැත්නම් dry-run (preview + report විතරක්) ලෙස ක්‍රියා කරනවා."
+        help="Pass this flag to actually run the DELETE operation. "
+             "Without it, the tool runs as a dry-run (preview + report only)."
     )
     args = parser.parse_args()
 
@@ -94,7 +94,7 @@ def main():
         action_handler.execute_delete(duplicate_groups, confirm=args.confirm)
 
         if not args.confirm:
-            print("\n[TIP] Delete confirm කරන්න: python main.py --config config.yaml --confirm")
+            print("\n[TIP] To confirm the delete, run: python main.py --config config.yaml --confirm")
 
     finally:
         db.close()
