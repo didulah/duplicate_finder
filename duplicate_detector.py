@@ -1,11 +1,11 @@
 """
 duplicate_detector.py
 ----------------------
-Core detection engine. user-specified table එකේ, user-specified columns
-(match_columns) අනුව duplicate records සොයාගන්නවා.
+Core detection engine. Finds duplicate records in the user-specified table,
+based on the user-specified columns (match_columns).
 
 Logic: GROUP BY match_columns HAVING COUNT(*) > 1
-ඊට පස්සේ, ඒ group එකේ full record details ටික fetch කරනවා.
+Then fetches the full record details for each of those groups.
 """
 
 from db_connector import DatabaseConnector
@@ -22,8 +22,8 @@ class DuplicateDetector:
 
     def find_duplicate_groups(self) -> list:
         """
-        Step 1: match_columns අනුව duplicate value combinations සොයාගන්නවා.
-        Returns: [{"email": "a@x.com", "count": 3}, ...] වගේ list එකක්
+        Step 1: Finds duplicate value combinations based on match_columns.
+        Returns: a list like [{"email": "a@x.com", "count": 3}, ...]
         """
         columns_str = ", ".join(self.match_columns)
 
@@ -40,9 +40,9 @@ class DuplicateDetector:
 
     def get_full_duplicate_records(self, duplicate_groups: list) -> list:
         """
-        Step 2: හම්බුන duplicate groups වල, සම්පූර්ණ record details
-        (primary_key එකත් සමඟ) fetch කරනවා. "keep" කරන record එකයි
-        "delete candidate" record(s) එකයි වෙන් කරලා label කරනවා.
+        Step 2: For each duplicate group found, fetches the full record details
+        (including the primary_key). Labels which record to "keep" and which
+        record(s) are "delete candidates".
         """
         all_groups = []
 
@@ -56,7 +56,7 @@ class DuplicateDetector:
 
             where_str = " AND ".join(where_clauses)
 
-            # keep_strategy අනුව order එක තීරණය කරනවා
+            # Decide sort order based on keep_strategy
             order_direction = "ASC" if self.keep_strategy == "keep_first" else "DESC"
 
             query = f"""
@@ -86,16 +86,16 @@ class DuplicateDetector:
         return all_groups
 
     def run(self) -> list:
-        """Full detection process එක run කරනවා. Main entry point එක."""
-        print(f"[INFO] '{self.table}' table එකේ, {self.match_columns} columns අනුව scan කරමින්...")
+        """Runs the full detection process. Main entry point."""
+        print(f"[INFO] Scanning table '{self.table}' on columns {self.match_columns}...")
 
         duplicate_groups = self.find_duplicate_groups()
 
         if not duplicate_groups:
-            print("[INFO] Duplicates කිසිවක් හම්බුනේ නෑ. Database එක clean!")
+            print("[INFO] No duplicates found. Database is clean!")
             return []
 
-        print(f"[INFO] Duplicate groups {len(duplicate_groups)}ක් හම්බුනා. Full details fetch කරමින්...")
+        print(f"[INFO] Found {len(duplicate_groups)} duplicate group(s). Fetching full details...")
         full_results = self.get_full_duplicate_records(duplicate_groups)
 
         return full_results
