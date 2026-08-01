@@ -1,8 +1,8 @@
 """
 db_connector.py
 ----------------
-MySQL සහ PostgreSQL දෙකටම connection handle කරන module එක.
-config.yaml එකේ "database.type" value එක අනුව නිවැරදි driver එක තෝරගන්නවා.
+Handles connections for both MySQL and PostgreSQL.
+Picks the correct driver based on the "database.type" value in config.yaml.
 """
 
 import sys
@@ -10,9 +10,9 @@ import sys
 
 class DatabaseConnector:
     """
-    Database connection එක open/close කරන, query run කරන wrapper class එක.
-    MySQL සහ PostgreSQL දෙකෙන්ම syntax වෙනස්කම් (e.g. placeholder style)
-    මේ class එක internal ව handle කරනවා.
+    Wrapper class that opens/closes the database connection and runs queries.
+    Internally handles the syntax differences between MySQL and PostgreSQL
+    (e.g. placeholder style).
     """
 
     def __init__(self, db_config: dict):
@@ -26,7 +26,7 @@ class DatabaseConnector:
         self.cursor = None
 
     def connect(self):
-        """Database එකට connect වෙනවා. Fail උනොත් clear error message එකක් දෙනවා."""
+        """Connects to the database. Prints a clear error message on failure."""
         try:
             if self.db_type == "mysql":
                 import mysql.connector
@@ -56,43 +56,43 @@ class DatabaseConnector:
             else:
                 raise ValueError(
                     f"Unsupported database type: '{self.db_type}'. "
-                    "config.yaml එකේ 'mysql' හෝ 'postgresql' ලෙස set කරන්න."
+                    "Set this to 'mysql' or 'postgresql' in config.yaml."
                 )
 
-            print(f"[OK] {self.db_type.upper()} database එකට සාර්ථකව connect විය: {self.database}")
+            print(f"[OK] Connected successfully to {self.db_type.upper()} database: {self.database}")
 
         except Exception as e:
-            print(f"[ERROR] Database connection එක fail විය: {e}", file=sys.stderr)
+            print(f"[ERROR] Database connection failed: {e}", file=sys.stderr)
             sys.exit(1)
 
     def execute_query(self, query: str, params: tuple = None):
-        """SELECT query එකක් run කරලා results ලබාදෙනවා (list of dicts)."""
+        """Runs a SELECT query and returns the results (list of dicts)."""
         try:
             self.cursor.execute(query, params or ())
             return self.cursor.fetchall()
         except Exception as e:
-            print(f"[ERROR] Query execution fail විය: {e}", file=sys.stderr)
+            print(f"[ERROR] Query execution failed: {e}", file=sys.stderr)
             sys.exit(1)
 
     def execute_write(self, query: str, params: tuple = None):
-        """DELETE/UPDATE වගේ write query එකක් run කරලා commit කරනවා."""
+        """Runs a write query (DELETE/UPDATE) and commits it."""
         try:
             self.cursor.execute(query, params or ())
             self.connection.commit()
             return self.cursor.rowcount
         except Exception as e:
             self.connection.rollback()
-            print(f"[ERROR] Write operation fail විය, rollback කරන ලදී: {e}", file=sys.stderr)
+            print(f"[ERROR] Write operation failed, rolled back: {e}", file=sys.stderr)
             sys.exit(1)
 
     def get_placeholder(self) -> str:
-        """MySQL vs PostgreSQL query placeholder syntax වෙනස (%s දෙකෙන්ම common)."""
+        """MySQL vs PostgreSQL query placeholder syntax (%s is common to both)."""
         return "%s"
 
     def close(self):
-        """Connection එක close කරනවා."""
+        """Closes the connection."""
         if self.cursor:
             self.cursor.close()
         if self.connection:
             self.connection.close()
-            print("[OK] Database connection එක close කරන ලදී.")
+            print("[OK] Database connection closed.")
