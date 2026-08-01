@@ -1,78 +1,79 @@
 # Project Log - Duplicate Finder & Cleaner
-මේ file එකේ, project එකේ progress එක session එකෙන් session එකට track කරනවා.
-අලුත් entry එකක් top එකට add කරන්න (newest first), පරණ entries ඉවත් කරන්නෙ නෑ.
+This file tracks project progress from session to session.
+Add new entries to the top (newest first); do not remove old entries.
 ---
-## Template (අලුත් entry එකකට copy කරගන්න)
+## Template (copy this for a new entry)
 ```
-## [YYYY-MM-DD] - කෙටි title එකක්
-**කරපු දේවල්:**
-**තීරණ ගත් දේවල්:**
+## [YYYY-MM-DD] - Short title
+**What was done:**
+**Decisions made:**
 **Blockers / Issues:**
-**ඊළඟ steps:**
+**Next steps:**
+```
 
 ## [2026-08-01] - MySQL Testing + Repo Audit
 
-**කරපු දේවල්:**
-- MySQL 8.0 container එකේ install කරලා, dupfinder_test DB එකක් + customers table (8 records, email duplicates 3ක්) හදලා full end-to-end test කළා
-- Dry-run test ✅ (3 delete candidates identify කළා, කිසිවක් delete වුණේ නෑ)
-- --confirm test ✅ (records 3 correct ලෙස delete වුණා, keep_first strategy verify වුණා)
-- Re-run test ✅ (duplicates නැති බව confirm වුණා)
-- Backup JSON content verify කළා (restorable format)
-- Repo audit කළා - LICENSE සහ config.example.yaml push වෙලා නොතිබූ බව හඳුනාගත්තා
+**What was done:**
+- Installed MySQL 8.0 in a container, created a dupfinder_test DB + customers table (8 records, 3 email duplicates) and ran a full end-to-end test
+- Dry-run test passed (identified 3 delete candidates, nothing was deleted)
+- --confirm test passed (3 records deleted correctly, keep_first strategy verified)
+- Re-run test passed (confirmed no duplicates remain)
+- Verified backup JSON content (restorable format)
+- Audited the repo - found that LICENSE and config.example.yaml had not been pushed
 
-**තීරණ ගත් දේවල්:**
-- LICENSE type: Custom "Regular License" (CodeCanyon-style) - source code access ඇතුව, resell/redistribute බෑ
-- Anonymity සඳහා LICENSE සහ main.py වල real name නොදා GitHub username (didulah) විතරක් use කළා
+**Decisions made:**
+- LICENSE type: Custom "Regular License" (CodeCanyon-style) - includes source code access, no resell/redistribute
+- For anonymity, used the GitHub username (didulah) instead of a real name in LICENSE and main.py
 
 **Blockers / Issues:**
-- කිසිවක් නෑ
+- None
 
-**ඊළඟ steps:**
-- [ ] LICENSE, config.example.yaml, main.py (fixed) push කරන්න
-- [ ] Gumroad/CodeCanyon listing description ලියන්න
-- [ ] v2 features plan කරන්න (fuzzy matching, multi-table support, simple GUI)
+**Next steps:**
+- [ ] Push LICENSE, config.example.yaml, main.py (fixed)
+- [ ] Write Gumroad/CodeCanyon listing description
+- [ ] Plan v2 features (fuzzy matching, multi-table support, simple GUI)
 
 ## 2026-07-31 - MySQL Testing Complete
 
-**කරපු දේවල්:**
-- MySQL 8.0 එකෙන් full end-to-end test කළා (dry-run → confirm → re-run → backup verify)
-- customers table එකේ email duplicates 3ක් correct ව detect + delete වුණා
-- Backup JSON restore-ready බව confirm කළා
+**What was done:**
+- Ran a full end-to-end test with MySQL 8.0 (dry-run -> confirm -> re-run -> backup verify)
+- Correctly detected + deleted 3 email duplicates in the customers table
+- Confirmed the backup JSON is restore-ready
 
-**තීරණ ගත් දේවල්:**
-- MySQL සහ PostgreSQL දෙකෙන්ම logic එකම (driver එක විතරයි වෙනස) - db_connector.py design එක validate වුණා
+**Decisions made:**
+- The logic is identical for MySQL and PostgreSQL (only the driver differs) - validated the db_connector.py design
 
 **Blockers / Issues:**
-- `config.example.yaml` file එක repo එකට push වෙලා තිබුණේ නෑ - fix කළා
+- The `config.example.yaml` file had not been pushed to the repo - fixed
 
-**ඊළඟ steps:**
-- [x] GitHub repo එකට push කරන්න
-- [x] MySQL එකෙනුත් end-to-end test කරන්න
-- [ ] `LICENSE` file එක ලියන්න
-- [ ] Gumroad/CodeCanyon listing description එක ලියන්න
-- [ ] Fuzzy matching (v2 feature) plan කරන්න
+**Next steps:**
+- [x] Push to GitHub repo
+- [x] End-to-end test with MySQL as well
+- [ ] Write the `LICENSE` file
+- [ ] Write the Gumroad/CodeCanyon listing description
+- [ ] Plan fuzzy matching (v2 feature)
 
 ## 2026-07-31 - MVP Build + PostgreSQL Test
 
-**කරපු දේවල්:**
-- Architecture design (CLI → DB Connector → Duplicate Detector → Report Generator → Safe Action)
-- Core files 5ම build කළා: `main.py`, `db_connector.py`, `duplicate_detector.py`, `report_generator.py`, `safe_action.py`
-- `config.example.yaml`, `requirements.txt`, `README.md`, `.gitignore` හදුවා
-- Container එකේ temporary PostgreSQL database එකක් හදලා, dummy duplicate data (customers table, 8 records, intentional email duplicates) දාලා end-to-end test කළා
+**What was done:**
+- Architecture design (CLI -> DB Connector -> Duplicate Detector -> Report Generator -> Safe Action)
+- Built all 5 core files: `main.py`, `db_connector.py`, `duplicate_detector.py`, `report_generator.py`, `safe_action.py`
+- Created `config.example.yaml`, `requirements.txt`, `README.md`, `.gitignore`
+- Set up a temporary PostgreSQL database in a container with dummy duplicate data (customers table, 8 records, intentional email duplicates) and ran an end-to-end test
 
-**තීරණ ගත් දේවල්:**
-- Tech stack: Python (MySQL + PostgreSQL දෙකටම support)
-- Safety-first design: `--confirm` flag නැතුව delete වෙන්නෙ නෑ (dry-run default), delete කරන්න කලින් auto-backup
+**Decisions made:**
+- Tech stack: Python (supporting both MySQL and PostgreSQL)
+- Safety-first design: no delete without the `--confirm` flag (dry-run by default), auto-backup before deleting
 - Duplicate detection logic: `GROUP BY match_columns HAVING COUNT(*) > 1`, `keep_first`/`keep_latest` strategy
-- GitHub repo folder structure එක plan කළා (src/tests/examples/reports/backups + .gitignore)
+- Planned the GitHub repo folder structure (src/tests/examples/reports/backups + .gitignore)
 
 **Blockers / Issues:**
-- Real production database එකක් තවම නෑ (temporary test DB එකෙන් විතරයි verify කළේ)
-- MySQL driver එකෙන් test කරලා නෑ (PostgreSQL එකෙන් විතරයි)
+- No real production database yet (only verified against a temporary test DB)
+- Not yet tested with the MySQL driver (only PostgreSQL so far)
 
-**ඊළඟ steps:**
-- [ ] GitHub repo එකට push කරන්න
-- [ ] MySQL එකෙනුත් end-to-end test කරන්න
-- [ ] `LICENSE` file එක ලියන්න
-- [ ] Gumroad/CodeCanyon listing description එක ලියන්න
-- [ ] Fuzzy matching (v2 feature) plan කරන්න
+**Next steps:**
+- [ ] Push to GitHub repo
+- [ ] End-to-end test with MySQL as well
+- [ ] Write the `LICENSE` file
+- [ ] Write the Gumroad/CodeCanyon listing description
+- [ ] Plan fuzzy matching (v2 feature)
