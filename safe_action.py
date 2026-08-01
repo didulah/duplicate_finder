@@ -1,8 +1,8 @@
 """
 safe_action.py
 ---------------
-Delete කරන්න කලින් automatic backup එකක් ගන්නවා (data loss risk අඩු කරන්න).
-User confirm කරාට පස්සේ විතරයි actual DELETE query run වෙන්නෙ.
+Takes an automatic backup before deleting (to reduce data loss risk).
+The actual DELETE query only runs after the user has confirmed.
 """
 
 import json
@@ -23,8 +23,8 @@ class SafeActionHandler:
 
     def backup_records(self, records_to_delete: list) -> str:
         """
-        Delete කරන්න යන records ටික, JSON file එකකට backup කරනවා.
-        මොකක් හරි වැරැද්දක් උනොත්, මේ file එකෙන් data restore කරන්න පුළුවන්.
+        Backs up the records that are about to be deleted into a JSON file.
+        If anything goes wrong, this file can be used to restore the data.
         """
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         backup_filename = f"backup_{self.table}_{timestamp}.json"
@@ -33,11 +33,11 @@ class SafeActionHandler:
         with open(backup_path, "w", encoding="utf-8") as f:
             json.dump(records_to_delete, f, indent=2, default=str, ensure_ascii=False)
 
-        print(f"[OK] Backup එක save විය: {backup_path} ({len(records_to_delete)} records)")
+        print(f"[OK] Backup saved: {backup_path} ({len(records_to_delete)} records)")
         return backup_path
 
     def collect_delete_candidates(self, duplicate_groups: list) -> list:
-        """duplicate_groups ලිස්ට් එකෙන්, "DELETE_CANDIDATE" ලෙස label කරපු records ටික විතරක් අයින් කරගන්නවා."""
+        """Pulls out only the records labeled "DELETE_CANDIDATE" from duplicate_groups."""
         delete_candidates = []
         for group in duplicate_groups:
             for item in group["records"]:
@@ -47,23 +47,23 @@ class SafeActionHandler:
 
     def execute_delete(self, duplicate_groups: list, confirm: bool = False) -> int:
         """
-        Full safe-delete workflow එක:
-        1. Delete candidates collect කරනවා
-        2. Backup ගන්නවා (auto_backup=True නම්)
-        3. User confirm කරලා තියෙනවා නම් විතරක් actual DELETE run කරනවා
+        Full safe-delete workflow:
+        1. Collect delete candidates
+        2. Take a backup (if auto_backup=True)
+        3. Only run the actual DELETE if the user has confirmed
         """
         delete_candidates = self.collect_delete_candidates(duplicate_groups)
 
         if not delete_candidates:
-            print("[INFO] Delete කරන්න records නෑ.")
+            print("[INFO] No records to delete.")
             return 0
 
         if self.auto_backup:
             self.backup_records(delete_candidates)
 
         if not confirm:
-            print(f"[SKIPPED] {len(delete_candidates)} records delete කරන්න තිබුණා, "
-                  f"but --confirm flag එක දීලා නෑ. Dry-run විදිහට ඉවරයි.")
+            print(f"[SKIPPED] {len(delete_candidates)} record(s) were eligible for deletion, "
+                  f"but the --confirm flag was not provided. Dry-run complete.")
             return 0
 
         deleted_count = 0
@@ -73,5 +73,5 @@ class SafeActionHandler:
             self.db.execute_write(query, (pk_value,))
             deleted_count += 1
 
-        print(f"[OK] Records {deleted_count}ක් සාර්ථකව delete කරන ලදී.")
+        print(f"[OK] Successfully deleted {deleted_count} record(s).")
         return deleted_count
