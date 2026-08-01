@@ -1,8 +1,8 @@
 """
 report_generator.py
 --------------------
-Duplicate detection results, CSV හෝ JSON report එකක් ලෙස save කරනවා.
-Terminal එකේ readable summary එකක් print කරන්නත් function එකක් තියෙනවා.
+Saves duplicate detection results as a CSV or JSON report.
+Also has a function to print a readable summary to the terminal.
 """
 
 import csv
@@ -19,7 +19,7 @@ class ReportGenerator:
         os.makedirs(self.output_dir, exist_ok=True)
 
     def print_summary(self, duplicate_groups: list):
-        """Terminal එකේ, table format එකකින් duplicate summary එක පෙන්නනවා."""
+        """Prints a table-formatted duplicate summary to the terminal."""
         if not duplicate_groups:
             return
 
@@ -37,10 +37,10 @@ class ReportGenerator:
 
         total_deletable = sum(row[2] for row in table_rows)
         print(f"\n[SUMMARY] Duplicate Groups: {len(duplicate_groups)} | "
-              f"Delete කරන්න පුළුවන් records: {total_deletable}")
+              f"Records eligible for deletion: {total_deletable}")
 
     def export(self, duplicate_groups: list) -> str:
-        """Report එක file එකකට (CSV/JSON) export කරලා, file path එක return කරනවා."""
+        """Exports the report to a file (CSV/JSON) and returns the file path."""
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"duplicate_report_{timestamp}.{self.output_format}"
         filepath = os.path.join(self.output_dir, filename)
@@ -59,7 +59,7 @@ class ReportGenerator:
         else:
             raise ValueError(f"Unsupported output format: {self.output_format}")
 
-        print(f"[OK] Report එක save විය: {filepath}")
+        print(f"[OK] Report saved: {filepath}")
         return filepath
 
     def _export_csv(self, flat_rows: list, filepath: str):
