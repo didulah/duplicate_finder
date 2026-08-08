@@ -10,6 +10,38 @@ Add new entries to the top (newest first); do not remove old entries.
 **Blockers / Issues:**
 **Next steps:**
 ```
+## [2026-08-08] - MySQL End-to-End Testing Complete
+
+**What was done:**
+- MySQL Community Server 8.0.46 installed on Windows using port 3400 (default ports 3306/3307 were blocked by Hyper-V/WSL2 dynamic port exclusion ranges)
+- Forgotten root password reset using the `--init-file` / skip-grant-tables method (mysqld run manually with an ALTER USER init file, then service restarted normally)
+- VS Code SQLTools connection (`local_mysql`) configured and verified against `localhost:3400`
+- Test database `duplicate_finder_test` created with a `customers` table: 4 unique records + 3 duplicate records (matching on `email`)
+- Missing Python dependencies installed: `pyyaml`, `mysql-connector-python==9.1.0`, `tabulate`
+- `config.yaml` created pointing to the MySQL test database
+- Ran full dry-run -> review -> `--confirm` workflow via `python main.py` / `python main.py --confirm`
+
+**Decisions made:**
+- `psycopg2-binary` install was skipped for now (fails to build on Python 3.14.3 due to missing `pg_config`); not needed for MySQL testing, to be revisited before PostgreSQL retesting
+- Local Python environment confirmed as Python 3.14.3
+
+**Blockers / Issues:**
+- None blocking. Minor non-blocking UX issue found: after `--confirm` successfully deletes records, the final CLI message reads "No duplicates found. Database is clean!" instead of an explicit "N records deleted" confirmation. Flagged as a future improvement, not a launch blocker.
+
+**Next steps:**
+- Confirm cleaned English-only source files, `config.example.yaml`, and `LICENSE` are pushed to the GitHub repo (unconfirmed since last session)
+- Fix `psycopg2-binary` install for Python 3.14.3 (or document a supported Python version) before retesting PostgreSQL
+- Set up PayPal account for Gumroad payouts
+- Publish Gumroad product listing
+- Submit CodeCanyon / Envato Author application
+
+### Test Results Detail
+| Check | Result |
+|---|---|
+| MySQL connection | Success (port 3400) |
+| Dry-run duplicate detection | 2 groups found, 3 records eligible for deletion |
+| CSV report + JSON backup | Both generated automatically before delete |
+| `--confirm` delete | Success — row count 7 -> 4, 0 duplicate groups remaining (verified via SQL query) |
 
 ## [2026-08-01] - MySQL Testing + Repo Audit
 
